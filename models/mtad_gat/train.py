@@ -14,8 +14,8 @@ PARAMS_FILE = "models/mtad_gat/params.yaml"
 
 def main(params):
     # Load data
-    X_train, X_val, X_test, X_labels_train, X_labels_val, X_labels_test = (
-        load_training_data(DATA_PATH, normalize=False, clean=True)
+    X_train, X_val, X_test, *_ = load_training_data(
+        DATA_PATH, normalize=True, clean=True
     )
 
     # Create dataloaders
@@ -52,7 +52,7 @@ def main(params):
     # log_dir = params["train_params"]["log_dir"]
 
     # Create optimizer and loss function
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(model.parameters(), lr=params["train_params"]["lr"])
     forecast_criterion = nn.MSELoss()
     recon_criterion = nn.MSELoss()
 
@@ -71,8 +71,8 @@ def main(params):
 
     # Create predictor
     predictor_params = params["predictor_params"]
-    X_train, X_val, X_test, X_labels_train, X_labels_val, X_labels_test = (
-        load_training_data(DATA_PATH, normalize=False, clean=False)
+    X_train, X_val, X_test, *_ = load_training_data(
+        DATA_PATH, normalize=False, clean=False
     )
     predictor = Predictor(
         model=model,
