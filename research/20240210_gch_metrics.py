@@ -20,7 +20,7 @@ with open(PARAMS_FILE, "r") as yaml_file:
 window_size = params["train_params"]["window_size"]
 # %%
 X_train, X_val, X_test, X_labels_train, X_labels_val, X_labels_test = (
-    load_training_data(DATA_PATH, normalize=False, clean=False)
+    load_training_data(DATA_PATH, normalize=False, replace_anomaly=None)
 )
 train_dataset = SlidingWindowDataset(X_train, window_size, target_dim=None)
 val_dataset = SlidingWindowDataset(X_val, window_size, target_dim=None)

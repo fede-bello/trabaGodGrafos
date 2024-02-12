@@ -107,10 +107,7 @@ def load_training_data(
         mask = X_train_labels == 1.0
         X_train = np.delete(X_train, np.where(mask)[0], axis=0)
         X_train_labels = np.delete(X_train_labels, np.where(mask)[0], axis=0)
-        X_val = np.delete(X_val, np.where(mask)[0], axis=0)
-        X_val_labels = np.delete(X_val_labels, np.where(mask)[0], axis=0)
-        X_test = np.delete(X_test, np.where(mask)[0], axis=0)
-        X_test_labels = np.delete(X_test_labels, np.where(mask)[0], axis=0)
+
         print("Anomalies deleted")
 
     X_train = torch.tensor(X_train).to(torch.float32)

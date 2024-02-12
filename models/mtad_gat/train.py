@@ -14,7 +14,7 @@ PARAMS_FILE = "models/mtad_gat/params.yaml"
 
 def main(params):
     # Load data
-    X_train, X_val, X_test, *_ = load_training_data(
+    X_train, X_val, *_ = load_training_data(
         DATA_PATH, normalize=False, replace_anomaly="delete"
     )
 
@@ -42,7 +42,7 @@ def main(params):
     if params["train_params"]["weights_path"]:
         state_dict = torch.load(
             params["train_params"]["weights_path"], map_location=torch.device("cpu")
-        )i
+        )
         model.load_state_dict(state_dict)
     # lr = params["train_params"]["lr"]
     # target_dims = params["train_params"]["target_dims"]
@@ -72,22 +72,6 @@ def main(params):
 
     # Train model
     trainer.fit(train_loader, val_loader)
-
-    # Create predictor
-    predictor_params = params["predictor_params"]
-    X_train, X_val, X_test, *_ = load_training_data(
-        DATA_PATH, normalize=False, replace_anomaly=None
-    )
-    predictor = Predictor(
-        model=model,
-        window_size=window_size,
-        n_features=n_features,
-        pred_args=predictor_params,
-    )
-    predictor.predict_anomalies(
-        torch.tensor(X_train), torch.tensor(X_test), None, save_output=True
-    )
-
     # TODO: Save model and prediction in the proper folder
 
 
