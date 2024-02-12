@@ -9,6 +9,10 @@ import torch
 import yaml
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.impute import KNNImputer
+from statsmodels.tsa.seasonal import STL
+from statsmodels.tsa.seasonal import seasonal_decompose
+
 
 PARAM_FILE_TYPE = Literal["yaml", "json"]
 
@@ -67,6 +71,13 @@ def load_data(base_path):
 
     return X_train, X_val, X_test, X_train_labels, X_val_labels, X_labels_test
 
+def interpolate_data(data):
+    df = pd.DataFrame(data)
+                        # linear, spline or time are good options
+    df.interpolate(method='spline', inplace=True, order =3)
+    interpolated_data = df.to_numpy()
+
+    return interpolated_data
 
 def load_training_data(base_path: str, normalize: bool = True, clean: bool = False):
     X_train, X_val, X_test, X_train_labels, X_val_labels, X_test_labels = load_data(
@@ -81,12 +92,17 @@ def load_training_data(base_path: str, normalize: bool = True, clean: bool = Fal
     if clean:
         mask = X_train_labels == 1.0
         X_train[mask] = np.nan
-        imp_mean = SimpleImputer(missing_values=np.nan, strategy="mean")
-        imp_mean.fit(X_train)
-        X_train = imp_mean.transform(X_train)
-        X_val = imp_mean.transform(X_val)
-        X_test = imp_mean.transform(X_test)
+        # imp_mean = SimpleImputer(missing_values=np.nan, strategy="mean")
+        # imp_mean.fit(X_train)
+        # X_train = imp_mean.transform(X_train)
+        # X_val = imp_mean.transform(X_val)
+        # X_test = imp_mean.transform(X_test)
 
+        X_train = interpolate_data(X_train)
+        X_val = interpolate_data(X_val)
+        X_test = interpolate_data(X_test)
+
+        print('Data cleaned')
     X_train = torch.tensor(X_train).to(torch.float32)
     X_val = torch.tensor(X_val).to(torch.float32)
     X_test = torch.tensor(X_test).to(torch.float32)
