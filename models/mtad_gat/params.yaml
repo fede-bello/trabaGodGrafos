@@ -28,14 +28,14 @@ train_params:
   dropout: 0.3
   dload: "output/mtad_gat"
   use_cuda: false
-  use_mps: true
+  use_mps: false
   print_every: 1
   log_tensorboard: true
   save_path: "output/mtad_gat"
   target_dims: 0
   args_summary: "args_summary"
   log_dir: "output/mtad_gat"
-  weights_path: "output/mtad_gat/model.pt"
+  weights_path: null
 
 predictor_params:
   dataset: "custom"

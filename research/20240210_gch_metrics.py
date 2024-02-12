@@ -9,6 +9,7 @@ from gragod.utils import load_training_data
 from models.mtad_gat.dataset import SlidingWindowDataset
 from models.mtad_gat.model import MTAD_GAT
 from models.mtad_gat.predictor import Predictor
+from models.mtad_gat.trainer import Trainer
 
 # %%
 DATA_PATH = "data"
@@ -26,7 +27,7 @@ val_dataset = SlidingWindowDataset(X_val, window_size, target_dim=None)
 # %%
 train_dataloader = DataLoader(train_dataset, batch_size=512, shuffle=False)
 # %%
-state_dict = torch.load("output/mtad_gat/model.pt")
+state_dict = torch.load("output/mtad_gat/model.pt", map_location=torch.device("mps"))
 # %%
 n_features = X_train.shape[1]
 out_dim = X_train.shape[1]
@@ -75,6 +76,7 @@ for idx, (x, y_) in enumerate(train_dataloader):
 print("Anomalies detected: ", anomalies_detecetd)
 print("Anomalies undetected: ", anomalied_undetected)
 
+
 # %%
 
 predictor_params = params["predictor_params"]
@@ -99,6 +101,7 @@ score_columns = [f"A_Score_{i}" for i in range(n_features)]
 scores = df[score_columns]
 prediction = df[pred_columns]
 y_pred = df[recon_pred_columns].to_numpy()
+thresholds = df[[f"Thresh_{i}" for i in range(n_features)]].iloc[0].to_numpy()
 # %%
 prediction
 # %%
@@ -106,23 +109,58 @@ y_pred.shape
 # %%
 df
 # %%
-X_train[window_size:]
-# %%
 S = scores.to_numpy()
 # %%
 mask = (X_labels_train == 1.0)[window_size:]
 # %%
-print(f"Mean score of anomalies: {S[mask].mean()}")
-print(f"Mean score of normal: {S[~mask].mean()}")
+import numpy as np
+
+mean_anomalies = []
+mean_normal = []
+for i in range(n_features):
+    print(f"Mean score of anomalies for feature {i}: {S[:, i][mask[:,i]].mean()}")
+    print(f"Mean score of normal for feature {i}: {S[:, i][~mask[:,i]].mean()}")
+    mean_anomalies.append(S[:, i][mask[:, i]].mean())
+    mean_normal.append(S[:, i][~mask[:, i]].mean())
+mean_anomalies = np.array(mean_anomalies)
+mean_normal = np.array(mean_normal)
+# S[:,0][~mask[:,0]].mean()
 # %%
-th = 2.690941
-prediction = S > th
+thresholds = (mean_anomalies + mean_normal) / 2
+for i in range(n_features):
+    # print(f"Threshold for feature {i}: {thresholds[i]}")
+    real_value = X_labels_train[window_size:, i]
+    prediction = S[:, i] > thresholds[i]
+    print(
+        f"Precision for feature {i}: {prediction[real_value == 1.0].sum() / prediction.sum()}"
+    )
+    print(
+        f"Recall for feature {i}: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
+    )
+
+# real_value = X_labels_train[window_size:, 0]
+# prediction = S[:, 0] > 0.9
+# print(f"Precision: {prediction[real_value == 1.0].sum() / prediction.sum()}")
+# print(f"Recall: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}")
+#
+# th = 2.79671
+prediction = S > thresholds
+
 real_value = X_labels_train[window_size:]
 print(
     f"Normal value acc: {(~prediction[real_value == 0.0]).sum() / (real_value == 0.0).sum()}"
 )
 print(f"Recall: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}")
 print(f"Precision: {prediction[real_value == 1.0].sum() / prediction.sum()}")
+
+print(f"Predictions per feature: {prediction.sum(axis=0)}")
+print(f"Real values per feature: {real_value.sum(axis=0)}")
+# %%
+# %%
+print(f"Mean score of anomalies: {S[mask].mean()}")
+print(f"Mean score of normal: {S[~mask].mean()}")
 # %%
 prediction
+# %%
+df[[f"Thresh_{i}" for i in range(n_features)]].iloc[0]
 # %%
