@@ -35,6 +35,7 @@ train_params:
   target_dims: null
   args_summary: "args_summary"
   log_dir: "output/mtad_gat"
+  weights_path: "output/mtad_gat/model.pt"
 
 predictor_params:
   dataset: "custom"

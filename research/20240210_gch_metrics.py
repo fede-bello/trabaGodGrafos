@@ -69,7 +69,7 @@ for idx, (x, y_) in enumerate(train_dataloader):
     # y_pred = torch.cat((y_pred, y_batch), 0)
     # y = torch.cat((y, y_), 0)
     i += 1
-    if i == 15:
+    if i == 1:
         break
 
 print("Anomalies detected: ", anomalies_detecetd)
@@ -115,7 +115,7 @@ mask = (X_labels_train == 1.0)[window_size:]
 print(f"Mean score of anomalies: {S[mask].mean()}")
 print(f"Mean score of normal: {S[~mask].mean()}")
 # %%
-th = 3.044147
+th = 2.690941
 prediction = S > th
 real_value = X_labels_train[window_size:]
 print(

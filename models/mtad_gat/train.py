@@ -15,7 +15,7 @@ PARAMS_FILE = "models/mtad_gat/params.yaml"
 def main(params):
     # Load data
     X_train, X_val, X_test, *_ = load_training_data(
-        DATA_PATH, normalize=True, clean=True
+        DATA_PATH, normalize=False, clean=True
     )
 
     # Create dataloaders
@@ -39,7 +39,9 @@ def main(params):
         dropout=params["train_params"]["dropout"],
         **params["model_params"],
     )
-
+    if params["train_params"]["weights_path"]:
+        state_dict = torch.load(params["train_params"]["weights_path"])
+        model.load_state_dict(state_dict)
     # lr = params["train_params"]["lr"]
     # target_dims = params["train_params"]["target_dims"]
     # n_epochs = params["train_params"]["n_epochs"]

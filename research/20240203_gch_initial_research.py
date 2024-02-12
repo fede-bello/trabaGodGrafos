@@ -44,9 +44,9 @@ def load_tp(base_path):
 
 
 # %%
-# df_train, df_train_labels, df_val, df_val_labels, df_test, df_test_labels = load_data(
-#     DATA_PATH
-# )
+df_train, df_train_labels, df_val, df_val_labels, df_test, df_test_labels = load_df(
+    DATA_PATH
+)
 es_train, es_label_train, es_val, es_label_val, es_test, es_label_test = load_tp(
     DATA_PATH
 )
@@ -56,4 +56,13 @@ plot = a.simple_moving_average(tp.duration.seconds(10))
 plot.plot()
 # %%
 es_train.plot()
+# %%
+a
+
+# %%
+df_train[:100][(df_train_labels["TS1"][:100] == 1.0).values]["TS1"].mean()
+# %%
+df_train[:100][(df_train_labels["TS1"][:100] == 0.0).values]["TS1"].mean()
+# %%
+df_train["TS1"].std()
 # %%
