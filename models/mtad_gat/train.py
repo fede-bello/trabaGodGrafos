@@ -40,7 +40,9 @@ def main(params):
         **params["model_params"],
     )
     if params["train_params"]["weights_path"]:
-        state_dict = torch.load(params["train_params"]["weights_path"])
+        state_dict = torch.load(
+            params["train_params"]["weights_path"], map_location=torch.device("cpu")
+        )
         model.load_state_dict(state_dict)
     # lr = params["train_params"]["lr"]
     # target_dims = params["train_params"]["target_dims"]

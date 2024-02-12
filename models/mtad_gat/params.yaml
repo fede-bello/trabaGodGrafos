@@ -32,14 +32,14 @@ train_params:
   print_every: 1
   log_tensorboard: true
   save_path: "output/mtad_gat"
-  target_dims: null
+  target_dims: 0
   args_summary: "args_summary"
   log_dir: "output/mtad_gat"
   weights_path: "output/mtad_gat/model.pt"
 
 predictor_params:
   dataset: "custom"
-  target_dims: null
+  target_dims: 0
   scale_scores: false
   level: 0.9999 
   q: 0.001
