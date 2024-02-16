@@ -60,23 +60,23 @@ def main(params):
         i = target_dim
         real_value = X_labels_train[window_size:, i]
         prediction = S > thresholds[0]
-        print(
-            f"Precision for feature {i}: {prediction[real_value == 1.0].sum() / prediction.sum()}"
-        )
-        print(
-            f"Recall for feature {i}: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
-        )
+        precision = prediction[real_value == 1.0].sum() / prediction.sum()
+        recall = prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()
+        print(f"Precision for feature {i}: {precision}")
+        print(f"Recall for feature {i}: {recall}")
+        print(f"F1 for feature {i}: {2 * (precision * recall) / (precision + recall)}")
 
     else:
         for i in n_features:
             # print(f"Threshold for feature {i}: {thresholds[i]}")
             real_value = X_labels_train[window_size:, i]
             prediction = S[:, i] > thresholds[i]
+            precision = prediction[real_value == 1.0].sum() / prediction.sum()
+            recall = prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()
+            print(f"Precision for feature {i}: {precision}")
+            print(f"Recall for feature {i}: {recall}")
             print(
-                f"Precision for feature {i}: {prediction[real_value == 1.0].sum() / prediction.sum()}"
-            )
-            print(
-                f"Recall for feature {i}: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
+                f"F1 for feature {i}: {2 * (precision * recall) / (precision + recall)}"
             )
 
         real_value = X_labels_train[window_size:, n_features]
