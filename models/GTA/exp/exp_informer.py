@@ -58,7 +58,7 @@ class Exp_Informer(Exp_Basic):
 
         args = self.args
 
-        X_train, X_val, X_test, *_ = load_training_data(args.data_path, normalize=False, clean=True)
+        X_train, X_val, X_test, *_ = load_training_data(args.root_path, normalize=False, clean=True)
 
         if flag == 'train':
             data = torch.utils.data.TensorDataset(X_train)
