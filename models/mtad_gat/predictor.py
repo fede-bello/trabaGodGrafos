@@ -81,12 +81,13 @@ class Predictor:
         recons = np.concatenate(recons, axis=0)
         actual = values.detach().cpu().numpy()[self.window_size :]
 
-        if self.target_dims is not None:
-            actual = actual[:, self.target_dims]
-
         anomaly_scores = np.zeros_like(actual)
         df_dict = {}
-        for i in range(preds.shape[1]):
+        for i in (
+            [self.target_dims]
+            if self.target_dims is not None
+            else range(preds.shape[1])
+        ):
             df_dict[f"Forecast_{i}"] = preds[:, i]
             df_dict[f"Recon_{i}"] = recons[:, i]
             df_dict[f"True_{i}"] = actual[:, i]
@@ -172,9 +173,11 @@ class Predictor:
             )
 
         # Find threshold and predict anomalies at feature-level (for plotting and diagnosis purposes)
-        out_dim = self.n_features if self.target_dims is None else len(self.target_dims)
+        out_dim = self.n_features
+
         all_preds = np.zeros((len(test_pred_df), out_dim))
-        for i in range(out_dim):
+
+        for i in [self.target_dims] if self.target_dims is not None else range(out_dim):
             train_feature_anom_scores = train_pred_df[f"A_Score_{i}"].values
             test_feature_anom_scores = test_pred_df[f"A_Score_{i}"].values
             epsilon = find_epsilon(train_feature_anom_scores, reg_level=2)

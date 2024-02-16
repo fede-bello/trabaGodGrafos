@@ -80,6 +80,7 @@ print("Anomalies undetected: ", anomalied_undetected)
 # %%
 
 predictor_params = params["predictor_params"]
+predictor_params["target_dims"] = None
 predictor = Predictor(
     model,
     window_size,
@@ -125,6 +126,33 @@ for i in range(n_features):
 mean_anomalies = np.array(mean_anomalies)
 mean_normal = np.array(mean_normal)
 # S[:,0][~mask[:,0]].mean()
+# %%
+i = 0
+thresholds[i] = 0.55
+real_value = X_labels_train[window_size:, i]
+prediction = S[:, i] > thresholds[i]
+print(
+    f"Precision for feature {i}: {prediction[real_value == 1.0].sum() / prediction.sum()}"
+)
+print(
+    f"Recall for feature {i}: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
+)
+# %%
+# plot precision-recall curve for different thresholds for feature i
+from matplotlib import pyplot as plt
+thresholds = np.linspace(0.4, 1, 100)
+for th in thresholds:
+    prediction = S[:, i] > th
+    precision = prediction[real_value == 1.0].sum() / prediction.sum()
+    recall = prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()
+    # plot precision-recall curve, precision on y-axis, recall on x-axis, equispaced axis
+    plt.scatter(recall, precision)
+# %%
+
+# %%
+
+# %%
+
 # %%
 thresholds = (mean_anomalies + mean_normal) / 2
 for i in range(n_features):
