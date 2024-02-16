@@ -5,8 +5,8 @@ from data.data_loader_dad import (
 from exp.exp_basic import Exp_Basic
 from models.vrae import VRAE
 
-from utils.tools import EarlyStopping, adjust_learning_rate
-from utils.metrics import metric
+from gragod.tools import EarlyStopping, adjust_learning_rate
+from gragod.metrics import metric
 
 import numpy as np
 

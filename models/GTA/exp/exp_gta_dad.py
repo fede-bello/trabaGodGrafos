@@ -6,8 +6,8 @@ from data.data_loader_dad import (
 from exp.exp_basic import Exp_Basic
 from models.gta import GTA
 
-from utils.tools import EarlyStopping, adjust_learning_rate
-from utils.metrics import metric
+from gragod.tools import EarlyStopping, adjust_learning_rate
+from gragod.metrics import metric
 from sklearn.metrics import classification_report
 
 import numpy as np
