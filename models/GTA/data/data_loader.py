@@ -58,13 +58,13 @@ class Dataset_ETT_hour(Dataset):
         else:
             data = df_data.values
             
-        df_stamp = df_raw[['time']][border1:border2]
-        df_stamp['time'] = pd.to_datetime(df_stamp.date)
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
         df_stamp['month'] = df_stamp.date.apply(lambda row:row.month,1)
         df_stamp['day'] = df_stamp.date.apply(lambda row:row.day,1)
         df_stamp['weekday'] = df_stamp.date.apply(lambda row:row.weekday(),1)
         df_stamp['hour'] = df_stamp.date.apply(lambda row:row.hour,1)
-        data_stamp = df_stamp.drop(['time'],1).values
+        data_stamp = df_stamp.drop(['date'],1).values
         
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
@@ -134,15 +134,15 @@ class Dataset_ETT_minute(Dataset):
         else:
             data = df_data.values
             
-        df_stamp = df_raw[['time']][border1:border2]
-        df_stamp['time'] = pd.to_datetime(df_stamp.date)
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
         df_stamp['month'] = df_stamp.date.apply(lambda row:row.month,1)
         df_stamp['day'] = df_stamp.date.apply(lambda row:row.day,1)
         df_stamp['weekday'] = df_stamp.date.apply(lambda row:row.weekday(),1)
         df_stamp['hour'] = df_stamp.date.apply(lambda row:row.hour,1)
         df_stamp['minute'] = df_stamp.date.apply(lambda row:row.minute,1)
         df_stamp['minute'] = df_stamp.minute.map(lambda x:x//15)
-        data_stamp = df_stamp.drop(['time'],1).values
+        data_stamp = df_stamp.drop(['date'],1).values
         
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
@@ -212,15 +212,15 @@ class SolarEnergy(Dataset):
         else:
             data = df_data.values
             
-        df_stamp = df_raw[['time']][border1:border2]
-        df_stamp['time'] = pd.to_datetime(df_stamp.date)
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
         df_stamp['month'] = df_stamp.date.apply(lambda row:row.month,1)
         df_stamp['day'] = df_stamp.date.apply(lambda row:row.day,1)
         df_stamp['weekday'] = df_stamp.date.apply(lambda row:row.weekday(),1)
         df_stamp['hour'] = df_stamp.date.apply(lambda row:row.hour,1)
         df_stamp['minute'] = df_stamp.date.apply(lambda row:row.minute,1)
         df_stamp['minute'] = df_stamp.minute.map(lambda x:x//10)
-        data_stamp = df_stamp.drop(['time'],1).values
+        data_stamp = df_stamp.drop(['date'],1).values
         
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
@@ -291,15 +291,15 @@ class DogeCoin(Dataset):
         else:
             data = df_data.values
             
-        df_stamp = df_raw[['time']][border1:border2]
-        df_stamp['time'] = pd.to_datetime(df_stamp.date)
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
         df_stamp['month'] = df_stamp.date.apply(lambda row:row.month,1)
         df_stamp['day'] = df_stamp.date.apply(lambda row:row.day,1)
         df_stamp['weekday'] = df_stamp.date.apply(lambda row:row.weekday(),1)
         df_stamp['hour'] = df_stamp.date.apply(lambda row:row.hour,1)
         df_stamp['minute'] = df_stamp.date.apply(lambda row:row.minute,1)
         df_stamp['minute'] = df_stamp.minute.map(lambda x:x//10)
-        data_stamp = df_stamp.drop(['time'],1).values
+        data_stamp = df_stamp.drop(['date'],1).values
         
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]

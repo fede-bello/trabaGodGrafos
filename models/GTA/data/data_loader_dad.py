@@ -80,9 +80,9 @@ class NASA_Anomaly(Dataset):
         if self.scale:
             data = self.preprocess(data)
 
-        df_stamp = pd.DataFrame(columns=['time'])
+        df_stamp = pd.DataFrame(columns=['date'])
         date = pd.date_range(start='1/1/2015', periods=len(data), freq='4s')
-        df_stamp['time'] = date
+        df_stamp['date'] = date
         df_stamp['month'] = df_stamp.date.apply(lambda row:row.month,1)
         df_stamp['day'] = df_stamp.date.apply(lambda row:row.day,1)
         df_stamp['weekday'] = df_stamp.date.apply(lambda row:row.weekday(),1)
@@ -90,7 +90,7 @@ class NASA_Anomaly(Dataset):
         df_stamp['minute'] = df_stamp.date.apply(lambda row:row.minute,1)
         # df_stamp['minute'] = df_stamp.minute.map(lambda x:x//10)
         df_stamp['second'] = df_stamp.date.apply(lambda row:row.second,1)
-        data_stamp = df_stamp.drop(['time'],1).values
+        data_stamp = df_stamp.drop(['date'],1).values
 
         if self.flag == 'train':
             if self.features=='M':
@@ -195,7 +195,7 @@ class WADI(Dataset):
             elif self.features=='S':
                 df_data = df_raw[[self.target]]
 
-            df_stamp = df_raw[['time']]
+            df_stamp = df_raw[['date']]
             
             if self.scale:
                 data = scaler.fit_transform(df_data.values)
@@ -213,7 +213,7 @@ class WADI(Dataset):
             border1 = border1s[self.set_type]
             border2 = border2s[self.set_type]
 
-            df_stamp = df_raw[['time']][border1:border2]
+            df_stamp = df_raw[['date']][border1:border2]
 
             if self.features=='M':
                 cols_data = df_raw.columns[1:-1]
@@ -232,7 +232,7 @@ class WADI(Dataset):
             self.data_y = data[border1:border2]
             self.label = label[border1:border2]
         
-        df_stamp['time'] = pd.to_datetime(df_stamp.date)
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
         df_stamp['month'] = df_stamp.date.apply(lambda row:row.month,1)
         df_stamp['day'] = df_stamp.date.apply(lambda row:row.day,1)
         df_stamp['weekday'] = df_stamp.date.apply(lambda row:row.weekday(),1)
@@ -241,7 +241,7 @@ class WADI(Dataset):
         # df_stamp['minute'] = df_stamp.minute.map(lambda x:x//10)
         df_stamp['second'] = df_stamp.date.apply(lambda row:row.second,1)
         df_stamp['second'] = df_stamp.second.map(lambda x:x//10)
-        data_stamp = df_stamp.drop(['time'],1).values
+        data_stamp = df_stamp.drop(['date'],1).values
         
         self.data_stamp = data_stamp
     
@@ -411,15 +411,16 @@ class Dataset_Custom(Dataset):
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
         '''
-        df_raw.columns: ['time', ...(other features), target feature]
+        df_raw.columns: ['date', ...(other features), target feature]
         '''
         # cols = list(df_raw.columns); 
+        df_raw = df_raw.rename(columns={"time": "date"})
         if self.cols:
             cols=self.cols.copy()
             cols.remove(self.target)
         else:
-            cols = list(df_raw.columns); cols.remove('time')
-        df_raw = df_raw[['time']+cols]
+            cols = list(df_raw.columns); cols.remove('date')
+        df_raw = df_raw[['date']+cols]
 
         num_train = int(len(df_raw)*0.7)
         num_test = int(len(df_raw)*0.2)
@@ -442,8 +443,8 @@ class Dataset_Custom(Dataset):
         else:
             data = df_data.values
             
-        df_stamp = df_raw[['time']][border1:border2]
-        df_stamp['time'] = pd.to_datetime(df_stamp.date)
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
         data_stamp = time_features(df_stamp, timeenc=self.timeenc, freq=self.freq)
 
         self.data_x = data[border1:border2]
