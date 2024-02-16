@@ -24,8 +24,8 @@ def main(params):
     args.model = 'informer' # model of experiment, options: [informer, informerstack, informerlight(TBD)]
 
     args.data = 'custom' # data
-    args.root_path = './' # root path of data file
-    args.data_path = 'data/TELCO_data_train.csv' # data file
+    args.root_path = 'data/' # root path of data file
+    args.data_path = 'TELCO_data_train.csv' # data file
     args.features = 'M' # forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate
     args.target = '' # target feature in S or MS task
     args.freq = '5m' # freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h
