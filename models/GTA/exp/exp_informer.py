@@ -6,7 +6,8 @@ from exp.exp_basic import Exp_Basic
 from models.GTA.models.model import Informer
 
 from gragod.tools import EarlyStopping, adjust_learning_rate
-from gragod.metrics import metric
+from gragod.metrics import metrics
+from gragod.utils import load_training_data 
 
 import numpy as np
 
@@ -54,36 +55,34 @@ class Exp_Informer(Exp_Basic):
         return model.double()
 
     def _get_data(self, flag):
+
         args = self.args
 
-        data_dict = {
-            'custom':Dataset_Custom,
+        X_train, X_val, X_test, *_ = load_training_data(args.root_path, normalize=False, clean=True)
 
-        }
-        Data = data_dict[self.args.data]
-
-        if flag == 'test':
-            shuffle_flag = False; drop_last = True; batch_size = args.batch_size
+        if flag == 'train':
+            data = torch.utils.data.TensorDataset(X_train)
+        elif flag == 'val':
+            data = torch.utils.data.TensorDataset(X_val)
+        elif flag == 'test':
+            data = torch.utils.data.TensorDataset(X_test)
         else:
-            shuffle_flag = True; drop_last = True; batch_size = args.batch_size
-        
-        data_set = Data(
-            root_path=args.root_path,
-            data_path=args.data_path,
-            flag=flag,
-            size=[args.seq_len, args.label_len, args.pred_len],
-            features=args.features,
-            target=args.target
-        )
-        print(flag, len(data_set))
+            raise ValueError(f"Invalid flag: {flag}")
+
+        shuffle_flag = True if flag != 'test' else False
+        drop_last = True
+        batch_size = args.batch_size
+
         data_loader = DataLoader(
-            data_set,
+            data,
             batch_size=batch_size,
             shuffle=shuffle_flag,
             num_workers=args.num_workers,
-            drop_last=drop_last)
+            drop_last=drop_last
+        )
 
-        return data_set, data_loader
+        print(flag, len(data))
+        return data, data_loader
 
     def _select_optimizer(self):
         model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)

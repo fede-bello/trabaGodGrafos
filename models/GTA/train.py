@@ -56,7 +56,7 @@ def main(params):
     args.freq = 'h'
 
     args.batch_size = 32
-    args.learning_rate = 0.0001
+    args.learning_rate = 0.001
     args.loss = 'mse'
     args.lradj = 'type1'
     args.use_amp = False # whether to use automatic mixed precision training
@@ -83,9 +83,6 @@ def main(params):
         args.target = data_info['T']
         args.enc_in, args.dec_in, args.c_out = data_info[args.features]
 
-    # Create model
-    n_features = X_train.shape[1]
-    out_dim = X_train.shape[1]
     args.detail_freq = args.freq
     args.freq = args.freq[-1:]
 
@@ -97,7 +94,6 @@ def main(params):
                     args.seq_len, args.label_len, args.pred_len,
                     args.d_model, args.n_heads, args.e_layers, args.d_layers, args.d_ff, args.attn, args.factor, args.embed, args.distil, args.mix, args.des, ii)
 
-        # set experiments
         exp = Exp(args)
 
         # train
