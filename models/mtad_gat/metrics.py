@@ -22,32 +22,44 @@ def main(params):
     columns = range(X_train.shape[1])
     n_features = columns if target_dim is None else [target_dim]
 
-    pred_columns = [f"A_Pred_{i}" for i in columns]
+    pred_columns = [f"A_Pred_{i}" for i in n_features]
     # recon_pred_columns = [f"Recon_{i}" for i in n_features]
-    score_columns = [f"A_Score_{i}" for i in columns]
+    score_columns = [f"A_Score_{i}" for i in n_features]
     scores = df[score_columns]
     prediction = df[pred_columns]
     # y_pred = df[recon_pred_columns].to_numpy()
-    thresholds = df[[f"Thresh_{i}" for i in columns]].iloc[0].to_numpy()
+    thresholds = df[[f"Thresh_{i}" for i in n_features]].iloc[0].to_numpy()
 
     S = scores.to_numpy()
     mask = (X_labels_train == 1.0)[window_size:]
 
     mean_anomalies = []
     mean_normal = []
-    for i in n_features:
-        print(f"Mean score of anomalies for feature {i}: {S[:, i][mask[:,i]].mean()}")
-        print(f"Mean score of normal for feature {i}: {S[:, i][~mask[:,i]].mean()}")
-        mean_anomalies.append(S[:, i][mask[:, i]].mean())
-        mean_normal.append(S[:, i][~mask[:, i]].mean())
+    if len(n_features) == 1:
+        mask = mask[:, target_dim]
+        print(f"Mean score of anomalies for feature {target_dim}: {S[mask[:]].mean()}")
+        print(f"Mean score of normal for feature {target_dim}: {S[~mask].mean()}")
+        mean_anomalies.append(S[mask].mean())
+        mean_normal.append(S[~mask].mean())
+
+    else:
+        for i in n_features:
+            print(
+                f"Mean score of anomalies for feature {i}: {S[:, i][mask[:,i]].mean()}"
+            )
+            print(f"Mean score of normal for feature {i}: {S[:, i][~mask[:,i]].mean()}")
+            mean_anomalies.append(S[:, i][mask[:, i]].mean())
+            mean_normal.append(S[:, i][~mask[:, i]].mean())
     mean_anomalies = np.array(mean_anomalies)
     mean_normal = np.array(mean_normal)
 
     thresholds = (mean_anomalies + mean_normal) / 2
-    for i in n_features:
-        # print(f"Threshold for feature {i}: {thresholds[i]}")
+    prediction = S > thresholds
+
+    if len(n_features) == 1:
+        i = target_dim
         real_value = X_labels_train[window_size:, i]
-        prediction = S[:, i] > thresholds[i]
+        prediction = S > thresholds[0]
         print(
             f"Precision for feature {i}: {prediction[real_value == 1.0].sum() / prediction.sum()}"
         )
@@ -55,14 +67,26 @@ def main(params):
             f"Recall for feature {i}: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
         )
 
-    prediction = S > thresholds
+    else:
+        for i in n_features:
+            # print(f"Threshold for feature {i}: {thresholds[i]}")
+            real_value = X_labels_train[window_size:, i]
+            prediction = S[:, i] > thresholds[i]
+            print(
+                f"Precision for feature {i}: {prediction[real_value == 1.0].sum() / prediction.sum()}"
+            )
+            print(
+                f"Recall for feature {i}: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
+            )
 
-    real_value = X_labels_train[window_size:, n_features]
-    print(
-        f"Normal value acc: {(~prediction[real_value == 0.0]).sum() / (real_value == 0.0).sum()}"
-    )
-    print(f"Recall: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}")
-    print(f"Precision: {prediction[real_value == 1.0].sum() / prediction.sum()}")
+        real_value = X_labels_train[window_size:, n_features]
+        print(
+            f"Normal value acc: {(~prediction[real_value == 0.0]).sum() / (real_value == 0.0).sum()}"
+        )
+        print(
+            f"Recall: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
+        )
+        print(f"Precision: {prediction[real_value == 1.0].sum() / prediction.sum()}")
 
     print(f"Predictions per feature: {prediction.sum(axis=0)}")
     print(f"Real values per feature: {real_value.sum(axis=0)}")
