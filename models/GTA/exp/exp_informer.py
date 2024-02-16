@@ -1,11 +1,4 @@
-from data.data_loader import (
-    Dataset_ETT_hour, 
-    Dataset_ETT_minute, 
-    SolarEnergy, 
-)
 from data.data_loader_dad import (
-    WADI,
-    NASA_Anomaly,
     Dataset_Custom,
 )
 
@@ -64,12 +57,6 @@ class Exp_Informer(Exp_Basic):
         args = self.args
 
         data_dict = {
-            'ETTh1':Dataset_ETT_hour,
-            'ETTh2':Dataset_ETT_hour,
-            'ETTm1':Dataset_ETT_minute,
-            'SolarEnergy':SolarEnergy,
-            'WADI':WADI,
-            'SMAP':NASA_Anomaly,
             'custom':Dataset_Custom,
 
         }

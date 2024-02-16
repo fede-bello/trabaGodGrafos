@@ -36,9 +36,9 @@ def main(params):
     args.pred_len = 24 # prediction sequence length
     # Informer decoder input: concat[start token series(label_len), zero padding series(pred_len)]
 
-    args.enc_in = 13 # encoder input size
-    args.dec_in = 13 # decoder input size
-    args.c_out = 13 # output size
+    args.enc_in = 12 # encoder input size
+    args.dec_in = 12 # decoder input size
+    args.c_out = 12 # output size
     args.factor = 5 # probsparse attn factor
     args.d_model = 512 # dimension of model
     args.n_heads = 8 # num of heads

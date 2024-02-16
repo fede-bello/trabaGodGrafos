@@ -1,6 +1,4 @@
 from data.data_loader_dad import (
-    NASA_Anomaly,
-    WADI,
     Dataset_Custom
 )
 from exp.exp_basic import Exp_Basic
@@ -59,9 +57,6 @@ class Exp_Informer_DAD(Exp_Basic):
         args = self.args
 
         data_dict = {
-            'SMAP':NASA_Anomaly,
-            'MSL':NASA_Anomaly,
-            'WADI':WADI,
             'custom':Dataset_Custom,
 
         }
