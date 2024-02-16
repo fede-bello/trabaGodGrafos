@@ -10,7 +10,7 @@ from data.data_loader_dad import (
 )
 
 from exp.exp_basic import Exp_Basic
-from models.model import Informer
+from models.GTA.models.model import Informer
 
 from gragod.tools import EarlyStopping, adjust_learning_rate
 from gragod.metrics import metric

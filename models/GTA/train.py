@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from gragod.utils import load_params, load_training_data
 from gragod.tools import dotdict
 from models.GTA.exp.exp_informer import Exp_Informer
-from gragod.metrics import mae, mse, rmse
+from gragod.metrics import MAE, MSE, RMSE
 
 
 
@@ -25,9 +25,9 @@ def main(params):
 
     args.data = 'custom' # data
     args.root_path = './' # root path of data file
-    args.data_path = 'TELCO_data.csv' # data file
+    args.data_path = 'data/TELCO_data_train.csv' # data file
     args.features = 'M' # forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate
-    args.target = 'target' # target feature in S or MS task
+    args.target = '' # target feature in S or MS task
     args.freq = '5m' # freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h
     args.checkpoints = './informer_checkpoints' # location of model checkpoints
 
@@ -117,9 +117,9 @@ def main(params):
     preds = np.load('./results/'+setting+'/pred.npy')
     trues = np.load('./results/'+setting+'/true.npy')
 
-    print('Mae: ', mae(preds, trues))
-    print('Mse: ', mse(preds, trues))
-    print('Rmse: ', rmse(preds, trues))
+    print('Mae: ', MAE(preds, trues))
+    print('Mse: ', MSE(preds, trues))
+    print('Rmse: ', RMSE(preds, trues))
 
     # TODO: Save model and prediction in the proper folder
 
