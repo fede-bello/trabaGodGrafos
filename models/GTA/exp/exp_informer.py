@@ -6,7 +6,7 @@ from exp.exp_basic import Exp_Basic
 from models.GTA.models.model import Informer
 
 from gragod.tools import EarlyStopping, adjust_learning_rate
-from gragod.metrics import metrics
+from gragod.metrics import metric
 from gragod.utils import load_training_data 
 
 import numpy as np
@@ -58,7 +58,7 @@ class Exp_Informer(Exp_Basic):
 
         args = self.args
 
-        X_train, X_val, X_test, *_ = load_training_data(args.root_path, normalize=False, clean=True)
+        X_train, X_val, X_test, *_ = load_training_data(args.data_path, normalize=False, clean=True)
 
         if flag == 'train':
             data = torch.utils.data.TensorDataset(X_train)
