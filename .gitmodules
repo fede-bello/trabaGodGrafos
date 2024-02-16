@@ -1,0 +1,3 @@
+[submodule "models/GTA"]
+	path = models/GTA
+	url = git@github.com:zackchen-lb/GTA.git
