@@ -13,7 +13,7 @@ import torch.nn.functional as F
 class AdaGCNConv(MessagePassing):
     def __init__(self, num_nodes, in_channels, out_channels, improved=False, 
                     add_self_loops=False, normalize=True, bias=True, init_method='all'):
-        super(AdaGCNConv, self).__init__(aggr='add') #  "Max" aggregation.
+        super().__init__(aggr='max') #  "Max" aggregation.
         self.num_nodes = num_nodes
         self.in_channels = in_channels
         self.out_channels = out_channels
