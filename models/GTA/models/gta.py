@@ -1,5 +1,5 @@
 import torch
-from torch import Torch as T
+from torch import Tensor as T
 from torch.nn import Sequential as Seq, Linear, ReLU, Parameter
 from torch_geometric.nn import MessagePassing, GCNConv
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
