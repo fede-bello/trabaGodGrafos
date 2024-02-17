@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-
 from gragod.utils import load_params, load_training_data
 from gragod.tools import dotdict
 from models.GTA.exp.exp_gta_dad import Exp_GTA_DAD
@@ -21,7 +20,7 @@ def main(params):
 
     args = dotdict()
 
-    args.model = 'informer' # model of experiment, options: [informer, informerstack, informerlight(TBD)]
+    args.model = 'gta' # model of experiment, options: [informer, informerstack, informerlight(TBD)]
 
     args.data = 'custom' # data
     args.root_path = 'data/' # root path of data file

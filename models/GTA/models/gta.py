@@ -4,8 +4,8 @@ from torch_geometric.nn import MessagePassing, GCNConv
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
 from torch_geometric.nn.inits import glorot, zeros
 from torch_geometric.utils import remove_self_loops, add_self_loops
-from models.model import Informer
-from models.tconv import TemporalBlock
+from models.GTA.models.model import Informer
+from models.GTA.models.tconv import TemporalBlock
 import torch.nn.functional as F
 
 
