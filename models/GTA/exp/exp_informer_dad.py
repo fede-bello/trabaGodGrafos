@@ -58,7 +58,6 @@ class Exp_Informer_DAD(Exp_Basic):
 
         data_dict = {
             'custom':Dataset_Custom,
-
         }
         Data = data_dict[self.args.data]
 

@@ -55,7 +55,6 @@ class Exp_Informer(Exp_Basic):
         return model.double()
 
     def _get_data(self, flag):
-
         args = self.args
 
         X_train, X_val, X_test, *_ = load_training_data(args.root_path, normalize=False, clean=True)
@@ -83,6 +82,7 @@ class Exp_Informer(Exp_Basic):
 
         print(flag, len(data))
         return data, data_loader
+
 
     def _select_optimizer(self):
         model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)

@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 
 from gragod.utils import load_params, load_training_data
 from gragod.tools import dotdict
-from models.GTA.exp.exp_informer import Exp_Informer
+from models.GTA.exp.exp_gta_dad import Exp_GTA_DAD
 from gragod.metrics import MAE, MSE, RMSE
 
 
@@ -86,7 +86,7 @@ def main(params):
     args.detail_freq = args.freq
     args.freq = args.freq[-1:]
 
-    Exp = Exp_Informer
+    Exp = Exp_GTA_DAD
 
     for ii in range(args.itr):
         # setting record of experiments

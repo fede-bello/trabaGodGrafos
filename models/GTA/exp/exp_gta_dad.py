@@ -1,7 +1,5 @@
 from data.data_loader_dad import (
-    NASA_Anomaly,
-    WADI,
-    SWaT
+    Dataset_Custom
 )
 from exp.exp_basic import Exp_Basic
 from models.gta import GTA
@@ -9,6 +7,8 @@ from models.gta import GTA
 from gragod.tools import EarlyStopping, adjust_learning_rate
 from gragod.metrics import metric
 from sklearn.metrics import classification_report
+from gragod.utils import load_training_data 
+
 
 import numpy as np
 
@@ -57,36 +57,35 @@ class Exp_GTA_DAD(Exp_Basic):
     def _get_data(self, flag):
         args = self.args
 
-        data_dict = {
-            'SMAP':NASA_Anomaly,
-            'MSL':NASA_Anomaly,
-            'WADI':WADI,
-            'SWaT':SWaT,
-        }
-        Data = data_dict[self.args.data]
+        X_train, X_val, X_test, *_ = load_training_data(args.root_path, normalize=False, clean=True)
 
-        if flag == 'test':
-            shuffle_flag = False; drop_last = True; batch_size = args.batch_size
+        if flag == 'train':
+            data = torch.utils.data.TensorDataset(X_train)
+        elif flag == 'val':
+            data = torch.utils.data.TensorDataset(X_val)
+        elif flag == 'test':
+            data = torch.utils.data.TensorDataset(X_test)
         else:
-            shuffle_flag = True; drop_last = True; batch_size = args.batch_size
-        
-        data_set = Data(
-            root_path=args.root_path,
-            data_path=args.data_path,
-            flag=flag,
-            size=[args.seq_len, args.label_len, args.pred_len],
-            features=args.features,
-            target=args.target
-        )
-        print(flag, len(data_set))
+            raise ValueError(f"Invalid flag: {flag}")
+
+        shuffle_flag = True if flag != 'test' else False
+        drop_last = True
+        batch_size = args.batch_size
+
         data_loader = DataLoader(
-            data_set,
+            data,
             batch_size=batch_size,
             shuffle=shuffle_flag,
             num_workers=args.num_workers,
-            drop_last=drop_last)
+            drop_last=drop_last
+        )
 
-        return data_set, data_loader
+        print(flag, len(data))
+        print(data_loader.dataset.tensors[0].shape)
+        print(data_loader.dataset.tensors[1].shape)
+        print(data_loader.dataset.tensors[2].shape)
+        print(data_loader.dataset.tensors[3].shape)
+        return data, data_loader
 
     def _select_optimizer(self):
         model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
