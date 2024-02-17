@@ -1,4 +1,5 @@
 import torch
+from torch import Torch as T
 from torch.nn import Sequential as Seq, Linear, ReLU, Parameter
 from torch_geometric.nn import MessagePassing, GCNConv
 from torch_geometric.nn.conv.gcn_conv import gcn_norm
@@ -12,7 +13,7 @@ import torch.nn.functional as F
 class AdaGCNConv(MessagePassing):
     def __init__(self, num_nodes, in_channels, out_channels, improved=False, 
                     add_self_loops=False, normalize=True, bias=True, init_method='all'):
-        super(AdaGCNConv, self).__init__(aggr='add', node_dim=0) #  "Max" aggregation.
+        super(AdaGCNConv, self).__init__(aggr='add') #  "Max" aggregation.
         self.num_nodes = num_nodes
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -22,10 +23,10 @@ class AdaGCNConv(MessagePassing):
         self.bias = bias
         self.init_method = init_method
 
-        self.weight = Parameter(torch.Tensor(in_channels, out_channels))
+        self.weight = Parameter(T(in_channels, out_channels))
 
         if bias:
-            self.bias = Parameter(torch.Tensor(out_channels))
+            self.bias = Parameter(T(out_channels))
         else:
             self.register_parameter('bias', None)
         
@@ -104,14 +105,14 @@ class GraphTemporalEmbedding(torch.nn.Module):
             for j in range(num_nodes):
                 source_nodes.append(j)
                 target_nodes.append(i)
-        self.edge_index = torch.tensor([source_nodes, target_nodes], dtype=torch.long, device=self.device)
+        self.edge_index = T([source_nodes, target_nodes], dtype=torch.long, device=self.device)
 
     def forward(self, x):
         # >> (bsz, seq_len, num_nodes)
         x = x.permute(0, 2, 1) # >> (bsz, num_nodes, seq_len)
 
         x = self.tc_modules[0](x) # >> (bsz, num_nodes, seq_len)
-        x = self.gc_modules[0](x.transpose(0, 1), self.edge_index).transpose(0, 1) # >> (bsz, num_nodes, seq_len)
+        x = self.gc_module[0](x.transpose(0, 1), self.edge_index).transpose(0, 1) # >> (bsz, num_nodes, seq_len)
         # output = x
         
         for i in range(1, self.num_levels):
