@@ -15,7 +15,7 @@ def main(params):
     )
     device = "cuda" if torch.cuda.is_available() else "cpu"
     state_dict = torch.load(
-        "output/mtad_gat/model.pt", map_location=torch.device(device)
+        params["train_params"]["weighs_path"], map_location=torch.device(device)
     )
     window_size = params["train_params"]["window_size"]
     n_features = X_train.shape[1]
