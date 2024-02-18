@@ -1,3 +1,6 @@
+import argparse
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 import yaml
@@ -6,9 +9,10 @@ from gragod.utils import load_training_data
 
 DATA_PATH = "data"
 PARAMS_FILE = "models/mtad_gat/params.yaml"
+DF_BASE_PATH = "saved_models/mtad_gat/feature_{feature}/train_output.pkl"
 
 
-def main(params):
+def main(params, feature: Optional[int] = None):
 
     window_size = params["train_params"]["window_size"]
 
@@ -16,9 +20,9 @@ def main(params):
         load_training_data(DATA_PATH, normalize=False, replace_anomaly=None)
     )
 
-    df = pd.read_pickle("output/mtad_gat/train_output.pkl")
+    df = pd.read_pickle(DF_BASE_PATH.format(feature=feature))
 
-    target_dim = params["train_params"]["target_dims"]
+    target_dim = feature
     columns = range(X_train.shape[1])
     n_features = columns if target_dim is None else [target_dim]
 
@@ -95,4 +99,13 @@ def main(params):
 if __name__ == "__main__":
     with open(PARAMS_FILE, "r") as yaml_file:
         params = yaml.safe_load(yaml_file)
-    main(params)
+
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument(
+        "--feature",
+        type=int,
+        default=0,
+    )
+    args = argparser.parse_args()
+
+    main(params, args.feature)

@@ -41,7 +41,7 @@ class Predictor:
         self.use_mov_av = pred_args["use_mov_av"]
         self.gamma = pred_args["gamma"]
         self.reg_level = pred_args["reg_level"]
-        self.save_path = pred_args["save_path"]
+        self.save_path = pred_args["save_path"].format(feature=self.target_dims)
         self.batch_size = 256
         self.use_cuda = True
         self.pred_args = pred_args

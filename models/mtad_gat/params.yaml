@@ -47,6 +47,6 @@ predictor_params:
   use_mov_av: false
   gamma: 0.8
   reg_level: 1
-  save_path: "output/mtad_gat"
+  save_path: "saved_models/mtad_gat/feature_{feature}"
 other:
   comment: ""

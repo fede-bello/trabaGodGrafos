@@ -1,3 +1,6 @@
+import argparse
+from typing import Optional
+
 import torch
 import yaml
 
@@ -7,19 +10,23 @@ from models.mtad_gat.predictor import Predictor
 
 DATA_PATH = "data"
 PARAMS_FILE = "models/mtad_gat/params.yaml"
+WEIGHTS_PATH = "saved_models/mtad_gat/feature_{feature}/model.pt"
 
 
-def main(params):
-    X_train, X_val, X_test, X_labels_train, X_labels_val, X_labels_test = (
-        load_training_data(DATA_PATH, normalize=False, replace_anomaly=False)
+def main(params, feature: Optional[int] = None):
+    X_train, _, X_test, *_ = load_training_data(
+        DATA_PATH, normalize=False, replace_anomaly=None
     )
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     state_dict = torch.load(
-        params["train_params"]["weighs_path"], map_location=torch.device(device)
+        WEIGHTS_PATH.format(feature=feature), map_location=torch.device(device)
     )
+
     window_size = params["train_params"]["window_size"]
     n_features = X_train.shape[1]
     out_dim = X_train.shape[1]
+
     model = MTAD_GAT(
         n_features,
         window_size,
@@ -31,7 +38,9 @@ def main(params):
     model.eval()
     if device == "cuda":
         model = model.to(device)
+
     predictor_params = params["predictor_params"]
+    predictor_params["target_dims"] = feature
     predictor = Predictor(
         model,
         window_size,
@@ -46,4 +55,13 @@ def main(params):
 if __name__ == "__main__":
     with open(PARAMS_FILE, "r") as yaml_file:
         params = yaml.safe_load(yaml_file)
-    main(params)
+
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument(
+        "--feature",
+        type=int,
+        default=0,
+    )
+    args = argparser.parse_args()
+
+    main(params, args.feature)
