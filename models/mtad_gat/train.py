@@ -1,3 +1,6 @@
+import argparse
+from typing import Optional
+
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -76,6 +79,7 @@ def main(params):
 
 
 if __name__ == "__main__":
+
     params = load_params(PARAMS_FILE, type="yaml")
 
     main(params)

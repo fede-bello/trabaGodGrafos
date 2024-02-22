@@ -1,4 +1,5 @@
 import argparse
+import os
 from typing import Optional
 
 import torch
@@ -10,7 +11,6 @@ from models.mtad_gat.predictor import Predictor
 
 DATA_PATH = "data"
 PARAMS_FILE = "models/mtad_gat/params.yaml"
-WEIGHTS_PATH = "saved_models/mtad_gat/feature_{feature}/model.pt"
 
 
 def main(params, feature: Optional[int] = None):
@@ -20,7 +20,10 @@ def main(params, feature: Optional[int] = None):
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     state_dict = torch.load(
-        WEIGHTS_PATH.format(feature=feature), map_location=torch.device(device)
+        os.path.join(
+            params["predictor_params"]["save_path"].format(feature=feature), "model.pt"
+        ),
+        map_location=torch.device(device),
     )
 
     window_size = params["train_params"]["window_size"]
@@ -60,7 +63,7 @@ if __name__ == "__main__":
     argparser.add_argument(
         "--feature",
         type=int,
-        default=0,
+        default=None,
     )
     args = argparser.parse_args()
 

@@ -1,4 +1,5 @@
 import argparse
+import os
 from typing import Optional
 
 import numpy as np
@@ -9,7 +10,6 @@ from gragod.utils import load_training_data
 
 DATA_PATH = "data"
 PARAMS_FILE = "models/mtad_gat/params.yaml"
-DF_BASE_PATH = "saved_models/mtad_gat/feature_{feature}/train_output.pkl"
 
 
 def main(params, feature: Optional[int] = None):
@@ -20,7 +20,12 @@ def main(params, feature: Optional[int] = None):
         load_training_data(DATA_PATH, normalize=False, replace_anomaly=None)
     )
 
-    df = pd.read_pickle(DF_BASE_PATH.format(feature=feature))
+    df = pd.read_pickle(
+        os.path.join(
+            params["predictor_params"]["save_path"].format(feature=feature),
+            "train_output.pkl",
+        )
+    )
 
     target_dim = feature
     columns = range(X_train.shape[1])
@@ -48,16 +53,16 @@ def main(params, feature: Optional[int] = None):
 
     else:
         for i in n_features:
-            print(
-                f"Mean score of anomalies for feature {i}: {S[:, i][mask[:,i]].mean()}"
-            )
-            print(f"Mean score of normal for feature {i}: {S[:, i][~mask[:,i]].mean()}")
+            # print(
+            #     f"Mean score of anomalies for feature {i}: {S[:, i][mask[:,i]].mean()}"
+            # )
+            # print(f"Mean score of normal for feature {i}: {S[:, i][~mask[:,i]].mean()}")
             mean_anomalies.append(S[:, i][mask[:, i]].mean())
             mean_normal.append(S[:, i][~mask[:, i]].mean())
     mean_anomalies = np.array(mean_anomalies)
     mean_normal = np.array(mean_normal)
 
-    thresholds = (mean_anomalies + mean_normal) / 2
+    thresholds = (mean_anomalies + mean_normal) / 1.5
     prediction = S > thresholds
 
     if len(n_features) == 1:
@@ -69,31 +74,41 @@ def main(params, feature: Optional[int] = None):
         print(f"Precision for feature {i}: {precision}")
         print(f"Recall for feature {i}: {recall}")
         print(f"F1 for feature {i}: {2 * (precision * recall) / (precision + recall)}")
-
+        print(f"Predictions per feature: {prediction.sum(axis=0)}")
+        print(f"Real values per feature: {real_value.sum(axis=0)}")
     else:
+        recalls = {}
+        precisions = {}
+        f1_scores = {}
         for i in n_features:
             # print(f"Threshold for feature {i}: {thresholds[i]}")
             real_value = X_labels_train[window_size:, i]
             prediction = S[:, i] > thresholds[i]
             precision = prediction[real_value == 1.0].sum() / prediction.sum()
             recall = prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()
-            print(f"Precision for feature {i}: {precision}")
-            print(f"Recall for feature {i}: {recall}")
-            print(
-                f"F1 for feature {i}: {2 * (precision * recall) / (precision + recall)}"
-            )
+            # print(f"Precision for feature {i}: {precision}")
+            # print(f"Recall for feature {i}: {recall}")
+            # print(
+            #     f"F1 for feature {i}: {2 * (precision * recall) / (precision + recall)}"
+            # )
+            recalls[i] = recall
+            precisions[i] = precision
+            f1_scores[i] = float(2 * (precision * recall) / (precision + recall))
 
-        real_value = X_labels_train[window_size:, n_features]
-        print(
-            f"Normal value acc: {(~prediction[real_value == 0.0]).sum() / (real_value == 0.0).sum()}"
-        )
-        print(
-            f"Recall: {prediction[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
-        )
-        print(f"Precision: {prediction[real_value == 1.0].sum() / prediction.sum()}")
+        real_values = X_labels_train[window_size:, n_features]
+        predictions = S > thresholds
+        # print(
+        #     f"Normal value acc: {(~predictions[real_value == 0.0]).sum() / (real_value == 0.0).sum()}"
+        # )
+        # print(
+        #     f"Recall: {predictions[real_value == 1.0].sum() / (real_value == 1.0).sum()}"
+        # )
+        # print(f"Precision: {predictions[real_value == 1.0].sum() / predictions.sum()}")
 
-    print(f"Predictions per feature: {prediction.sum(axis=0)}")
-    print(f"Real values per feature: {real_value.sum(axis=0)}")
+    for key, value in recalls.items():
+        print(
+            f"Feature {key} | Precision {precisions[key]:.3} | Recall: {value:.3} | F1: {f1_scores[key]:.3} | Mean Score Anomalies: {mean_anomalies[key]:.3} | Mean Score Normal: {mean_normal[key]:.3} | Number of predictions: {predictions[:, key].sum()} | Number of anomalies: {int(real_values[:, key].sum())}"
+        )
 
 
 if __name__ == "__main__":
@@ -104,7 +119,7 @@ if __name__ == "__main__":
     argparser.add_argument(
         "--feature",
         type=int,
-        default=0,
+        default=None,
     )
     args = argparser.parse_args()
 
