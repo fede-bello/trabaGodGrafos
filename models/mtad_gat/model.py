@@ -71,7 +71,9 @@ class MTAD_GAT(nn.Module):
 
     def forward(self, x):
         # x shape (b, n, k): b - batch size, n - window size, k - number of features
+        import ipdb
 
+        ipdb.set_trace()
         x = self.conv(x)
         h_feat = self.feature_gat(x)
         h_temp = self.temporal_gat(x)

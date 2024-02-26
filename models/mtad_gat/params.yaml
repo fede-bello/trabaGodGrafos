@@ -11,7 +11,7 @@ model_params:
   feat_gat_embed_dim: null
   time_gat_embed_dim: null
   gru_n_layers: 1
-  gru_hid_dim: 300
+  gru_hid_dim: 1200
   forecast_n_layers: 3
   forecast_hid_dim: 300
   recon_n_layers: 1
@@ -19,7 +19,7 @@ model_params:
   alpha: 0.2
 
 train_params:
-  window_size: 100
+  window_size: 200
   n_epochs: 100
   batch_size: 256
   init_lr: 0.001

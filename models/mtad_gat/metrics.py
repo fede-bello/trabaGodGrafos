@@ -62,6 +62,26 @@ def main(params, feature: Optional[int] = None):
     mean_anomalies = np.array(mean_anomalies)
     mean_normal = np.array(mean_normal)
 
+    # Optimize thresholds
+    from scipy.optimize import minimize_scalar
+    from sklearn.metrics import f1_score
+
+    print("Optimizing thresholds")
+    thresholds = []
+    for i in n_features:
+        real_value = X_labels_train[window_size:, i]
+
+        def objective_function(threshold):
+            prediction = S[:, i] > threshold
+            return -f1_score(real_value, prediction)
+
+        result = minimize_scalar(
+            objective_function,
+            bounds=(S.min(axis=0)[i], S.max(axis=0)[i]),
+            method="bounded",
+        )
+        thresholds.append(result.x)
+
     thresholds = (mean_anomalies + mean_normal) / 1.5
     prediction = S > thresholds
 

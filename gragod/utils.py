@@ -12,7 +12,7 @@ from sklearn.preprocessing import MinMaxScaler
 PARAM_FILE_TYPE = Literal["yaml", "json"]
 
 
-def load_df(base_path):
+def load_df(base_path, replace_anomaly: Literal["interpolate", "delete", None] = None):
     df_train = pd.read_csv(os.path.join(base_path, "TELCO_data_train.csv"))
     df_train_labels = pd.read_csv(os.path.join(base_path, "TELCO_labels_train.csv"))
     df_val = pd.read_csv(os.path.join(base_path, "TELCO_data_val.csv"))
@@ -20,6 +20,11 @@ def load_df(base_path):
     df_test = pd.read_csv(os.path.join(base_path, "TELCO_data_test.csv"))
     df_test_labels = pd.read_csv(os.path.join(base_path, "TELCO_labels_test.csv"))
 
+    if replace_anomaly == "interpolate":
+        df_train.interpolate(method="spline", inplace=True, order=3)
+        df_val.interpolate(method="spline", inplace=True, order=3)
+        df_test.interpolate(method="spline", inplace=True, order=3)
+        print("Anomalies interpolated")
     return df_train, df_train_labels, df_val, df_val_labels, df_test, df_test_labels
 
 
