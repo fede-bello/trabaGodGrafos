@@ -250,17 +250,33 @@ class GraphLayer(MessagePassing):
                 (x_j, embedding_j), dim=-1
             )  # concatenates along the last dim, i.e. columns in this case
 
-        # concatenate learnable parameters to become [1, 1, 2 x out_channels]
+        # # concatenate learnable parameters to become [1, 1, 2 x out_channels]
+        # cat_att_i = torch.cat((self.att_i, self.att_em_i), dim=-1)
+        # cat_att_j = torch.cat((self.att_j, self.att_em_j), dim=-1)
+
+        # # [(topk x N x batch_size), 1]
+        # alpha = (key_i * cat_att_i).sum(-1) + (key_j * cat_att_j).sum(
+        #     -1
+        # )  # the matrix multiplication between a^T and g's in eqn (7)
+
+        # alpha = alpha.view(-1, self.heads, 1)  # [(topk x N x batch_size), 1, 1]
+        # alpha = F.leaky_relu(alpha, self.negative_slope)
+            # concatenate learnable parameters to become [1, 1, 2 x out_channels]
+
+        ############ CHANGE TO APPLY GATV2  ##########################
         cat_att_i = torch.cat((self.att_i, self.att_em_i), dim=-1)
         cat_att_j = torch.cat((self.att_j, self.att_em_j), dim=-1)
+
+        # Apply Leaky ReLU to concatenated attention values
+        cat_att_i = F.leaky_relu(cat_att_i, self.negative_slope)
+        cat_att_j = F.leaky_relu(cat_att_j, self.negative_slope)
 
         # [(topk x N x batch_size), 1]
         alpha = (key_i * cat_att_i).sum(-1) + (key_j * cat_att_j).sum(
             -1
         )  # the matrix multiplication between a^T and g's in eqn (7)
 
-        alpha = alpha.view(-1, self.heads, 1)  # [(topk x N x batch_size), 1, 1]
-        alpha = F.leaky_relu(alpha, self.negative_slope)
+        alpha = alpha.view(-1, self.heads, 1) 
         alpha = softmax(alpha, edge_index_i, None, size_i)  # eqn (8)
         alpha = F.dropout(alpha, p=self.dropout, training=self.training)
 
