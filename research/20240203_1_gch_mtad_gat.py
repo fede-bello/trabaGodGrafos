@@ -246,3 +246,40 @@ x, y = next(iter(train_loader))
 # %%
 y_pred = model(x)
 # %%
+from gragod.utils import load_params, load_training_data
+
+X_train, X_val, *_ = load_training_data(
+    DATA_PATH, normalize=False, replace_anomaly="delete"
+)
+
+# Create dataloaders
+window_size = params["train_params"]["window_size"]
+batch_size = params["train_params"]["batch_size"]
+
+train_dataset = SlidingWindowDataset(X_train, window_size, target_dim=None)
+val_dataset = SlidingWindowDataset(X_val, window_size, target_dim=None)
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=False)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+
+# Create model
+n_features = X_train.shape[1]
+out_dim = X_train.shape[1]
+
+
+params = load_params(PARAMS_FILE, type="yaml")
+model = MTAD_GAT(
+    n_features,
+    window_size,
+    out_dim,
+    dropout=params["train_params"]["dropout"],
+    **params["model_params"],
+)
+if params["train_params"]["weights_path"]:
+    state_dict = torch.load(
+        params["train_params"]["weights_path"], map_location=torch.device("cpu")
+    )
+    model.load_state_dict(state_dict)
+# %%
+
+# %%

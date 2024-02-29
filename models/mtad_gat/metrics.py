@@ -130,6 +130,8 @@ def main(params, feature: Optional[int] = None):
             f"Feature {key} | Precision {precisions[key]:.3} | Recall: {value:.3} | F1: {f1_scores[key]:.3} | Mean Score Anomalies: {mean_anomalies[key]:.3} | Mean Score Normal: {mean_normal[key]:.3} | Number of predictions: {predictions[:, key].sum()} | Number of anomalies: {int(real_values[:, key].sum())}"
         )
 
+    print("F1 mean: ", np.array(list(f1_scores.values())).mean())
+
 
 if __name__ == "__main__":
     with open(PARAMS_FILE, "r") as yaml_file:

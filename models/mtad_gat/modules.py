@@ -99,7 +99,6 @@ class FeatureAttentionLayer(nn.Module):
         # Attention weights
         attention = torch.softmax(e, dim=2)
         attention = torch.dropout(attention, self.dropout, train=self.training)
-
         # Computing new node features using the attention
         h = self.sigmoid(torch.matmul(attention, x))
 
