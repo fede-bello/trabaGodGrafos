@@ -1,3 +1,6 @@
+import random
+
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 
@@ -97,7 +100,47 @@ class FeatureAttentionLayer(nn.Module):
             e += self.bias
 
         # Attention weights
+        attention_mask = torch.tensor(
+            [
+                [1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0],
+                [0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1],
+                [0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0],
+                [0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0],
+                [1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0],
+                [1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0],
+                [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+                [0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1],
+                [0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+                [1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1],
+                [0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1],
+            ]
+        )
+        if torch.cuda.is_available():
+            attention_mask = attention_mask.cuda()
+        e = e * attention_mask
         attention = torch.softmax(e, dim=2)
+
+        # random_index = random.choice(range(attention.size(0)))
+        # plt.imshow(
+        #     attention[random_index],
+        #     cmap="viridis",
+        #     interpolation="nearest",
+        #     vmin=0,
+        #     vmax=0.3,
+        # )
+        # plt.colorbar()  # Add a color bar to show the scale
+        # plt.title("Attention")
+        # print(attention[random_index].sum(1))
+        # # plt.xlabel("X-axis")
+        # # plt.ylabel("Y-axis")
+
+        # # Save the image with the specified name and full path
+        # plt.savefig("/Users/gonza/facultad/aagrafos/trabaGodGrafos/attention.png")
+
+        # Show the plot
+        # plt.show()
+
         attention = torch.dropout(attention, self.dropout, train=self.training)
         # Computing new node features using the attention
         h = self.sigmoid(torch.matmul(attention, x))

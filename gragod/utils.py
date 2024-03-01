@@ -146,7 +146,7 @@ def normalize_data(data, scaler=None) -> Tuple[np.ndarray, MinMaxScaler]:
     return data, scaler
 
 
-def load_params(base_path: str, type: PARAM_FILE_TYPE) -> dict:
+def load_params(base_path: str, type: PARAM_FILE_TYPE = "yaml") -> dict:
     if type == "yaml":
         with open(base_path, "r") as yaml_file:
             params = yaml.safe_load(yaml_file)
